@@ -30,6 +30,7 @@ end
 # RECONSTRUCT ANSATZ
 for row in eachrow(gd[run])
     push!(ansatz, pool[row.:generator_index_in_pool] => 0.0)
+    # NOTE: this step adds both H and the pool operator to the ansatz
 end
 angles = collect(Iterators.flatten(zip(gd[run][!,:γ_coeff], gd[run][!,:β_coeff])))
 ADAPT.bind!(ansatz, angles)  #= <- this is your reconstructed ansatz =#
