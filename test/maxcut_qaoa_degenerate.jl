@@ -98,7 +98,7 @@ H_number = 1
 # WRITE HAMILTONIAN TO CSV FILE
 ham_file = "qaoa_dataset/Hamiltonian"*string(H_number)*"_n_"*string(n)*"_Hamiltonian.csv"
 CSV.write(ham_file, H)
-# SAVE HAMILTONIAN - serialize a dict for enhanced portability
+# SAVE HAMILTONIAN - serialize for enhanced portability
 ham_file = "qaoa_dataset/Hamiltonian"*string(H_number)*"_n_"*string(n)*"_Hamiltonian"
 Serialization.serialize(ham_file, H)
 

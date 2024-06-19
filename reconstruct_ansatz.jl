@@ -17,8 +17,7 @@ H = Serialization.deserialize(serialized_H)
 
 # READ IN ADAPT-QAOA RESULTS
 results_file = "qaoa_dataset/Hamiltonian1_n_"*string(n)*"_adaptqaoa_results.csv"
-csv = CSV.File(results_file)
-my_df = DataFrames.DataFrame(csv)
+csv = CSV.File(results_file); my_df = DataFrames.DataFrame(csv)
 
 # RECONSTRUCT ANSATZ
 gd = groupby(my_df, :run)
