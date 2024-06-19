@@ -1,9 +1,15 @@
 coeff,pauli
--0.5 - 0.0im,ZIIIZI
+-0.5 - 0.0im,ZIZIII
 -0.5 - 0.0im,IIIIII
--0.5 - 0.0im,IZIIZI
+-0.5 - 0.0im,ZIIIIZ
+-0.5 - 0.0im,IIIIII
+-0.5 - 0.0im,IZZIII
 -0.5 - 0.0im,IIIIII
 -0.5 - 0.0im,IZIIIZ
+-0.5 - 0.0im,IIIIII
+-0.5 - 0.0im,IIZIZI
+-0.5 - 0.0im,IIIIII
+-0.5 - 0.0im,IIIZZI
 -0.5 - 0.0im,IIIIII
 -0.5 - 0.0im,IIIZIZ
 -0.5 - 0.0im,IIIIII
