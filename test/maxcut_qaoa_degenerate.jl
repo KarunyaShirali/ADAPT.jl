@@ -8,6 +8,7 @@ import PauliOperators: ScaledPauliVector, FixedPhasePauli
 import LinearAlgebra: norm
 import CSV
 import DataFrames
+import Serialization
 
 # DEFINE A GRAPH
 n = 6
@@ -75,13 +76,13 @@ for trial_num = 1:trials
     # RUN THE ALGORITHM
     success = ADAPT.run!(ansatz, trace, adapt, vqe, pool, H, ψ0, callbacks)
     println(success ? "Success!" : "Failure - optimization didn't converge.")
-
+    
     # RESULTS
     if !success
         continue
     end
     
-    # SAVE THE TRACE
+    # SAVE THE TRACE IF ADAPT WAS SUCCESSFUL
     df = DataFrames.DataFrame(:run => trial_num,
                               :pooltype => pooltype,
                               :generator_index_in_pool => trace[:selected_index][1:end-1], 
@@ -91,10 +92,16 @@ for trial_num = 1:trials
     append!(results_df, df)
 end
 
+# assign some index to the Hamiltonian
 H_number = 1
-# WRITE THE HAMILTONIAN TO A FILE
+
+# WRITE HAMILTONIAN TO CSV FILE
 ham_file = "qaoa_dataset/Hamiltonian"*string(H_number)*"_n_"*string(n)*"_Hamiltonian.csv"
 CSV.write(ham_file, H)
+# SAVE HAMILTONIAN - serialize a dict for enhanced portability
+ham_file = "qaoa_dataset/Hamiltonian"*string(H_number)*"_n_"*string(n)*"_Hamiltonian"
+Serialization.serialize(ham_file, H)
+
 
 # WRITE THE ADAPT-QAOA RESULTS TO A FILE
 results_file = "qaoa_dataset/Hamiltonian"*string(H_number)*"_n_"*string(n)*"_adaptqaoa_results.csv"
