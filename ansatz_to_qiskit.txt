@@ -1,0 +1,17 @@
+py"""
+import qiskit.quantum_info
+from qiskit.circuit import QuantumCircuit
+from qiskit.circuit.library import PauliEvolutionGate
+
+circuit = QuantumCircuit(n)
+
+
+_op = qiskit.quantum_info.Pauli('XY')
+evo = PauliEvolutionGate(_op , time=0.2)
+
+circuit.append(evo, range(n))
+
+psi = Statevector(circuit)
+print(psi)
+
+"""    
