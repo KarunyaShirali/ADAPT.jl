@@ -1,4 +1,4 @@
-py"""
+
 import qiskit.quantum_info
 from qiskit.circuit import QuantumCircuit
 from qiskit.circuit.library import PauliEvolutionGate
@@ -13,5 +13,3 @@ circuit.append(evo, range(n))
 
 psi = Statevector(circuit)
 print(psi)
-
-"""    
