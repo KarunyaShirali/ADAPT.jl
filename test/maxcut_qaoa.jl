@@ -65,7 +65,7 @@ vqe = ADAPT.OptimOptimizer(:BFGS; g_tol=1e-6)
 
 # SELECT THE CALLBACKS
 callbacks = [
-    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_score, :scores),
+    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_score, :scores, :callback_flagged),
     ADAPT.Callbacks.ParameterTracer(),
     ADAPT.Callbacks.Printer(:energy, :selected_index, :selected_score),
     ADAPT.Callbacks.ScoreStopper(1e-3),

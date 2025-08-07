@@ -532,11 +532,12 @@ module Callbacks
     end
 
     function (stopper::ParameterStopper)(
-        ::Data, ansatz::AbstractAnsatz, ::Trace,
+        ::Data, ansatz::AbstractAnsatz, trace::Trace,
         ::AdaptProtocol, ::GeneratorList, ::Observable, ::QuantumState,
     )
         if length(ansatz) ≥ stopper.n
             ADAPT.set_converged!(ansatz, true)
+            trace[:callback_flagged] = "ParameterStopper"
         end
         return false
     end
@@ -559,11 +560,12 @@ module Callbacks
     end
 
     function (stopper::ScoreStopper)(
-        data::Data, ansatz::AbstractAnsatz, ::Trace,
+        data::Data, ansatz::AbstractAnsatz, trace::Trace,
         ::AdaptProtocol, ::GeneratorList, ::Observable, ::QuantumState,
     )
         if maximum(abs.(data[:scores])) < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
+            trace[:callback_flagged] = "ScoreStopper"
         end
         return false
     end
@@ -606,6 +608,7 @@ module Callbacks
         energy_range = maximum(last_n_energies) - minimum(last_n_energies)
         if energy_range < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
+            trace[:callback_flagged] = "SlowStopper"
         end
 
         return false
@@ -641,6 +644,7 @@ module Callbacks
         last_energy = last(trace[:energy])
         if abs(last_energy - stopper.floor) < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
+            trace[:callback_flagged] = "FloorStopper"
         end
         return false
     end
