@@ -96,14 +96,15 @@ vqe = ADAPT.OptimOptimizer(:BFGS; g_tol=1e-6)
 
 # SELECT THE CALLBACKS
 callbacks = [
-    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_score),
+    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_score, :scores, :callback_flagged),
     ADAPT.Callbacks.ParameterTracer(),
     ModalSampleTracer(),
-    ADAPT.Callbacks.Printer(:energy),
+    ADAPT.Callbacks.Printer(:energy, :selected_generator, :selected_score),
     ADAPT.Callbacks.ScoreStopper(adapt_gradient_threshold),
     ADAPT.Callbacks.ParameterStopper(100),
-    ADAPT.Callbacks.FloorStopper(0.5, Exact.E0),
-    ADAPT.Callbacks.SlowStopper(1.0, 3),
+    ADAPT.Callbacks.FloorStopper(0.3, Exact.E0),
+    ADAPT.Callbacks.SlowStopper(0.3, 3),
+    ADAPT.Callbacks.LayerStopper(2),
 ]
 
 # RUN THE ALGORITHM
@@ -114,6 +115,12 @@ println(success ? "Success!" : "Failure - optimization didn't converge.")
 results_df = DataFrames.DataFrame()
 
 if success
+    # DISPLAY MOST LIKELY BITSTRINGS FROM EACH ADAPTATION
+    println("Most likely bitstrings after each adaption:")
+    for z in trace[:modalsample]
+        println(bitstring(z)[end-n+1:end])
+    end
+
     # SAVE THE TRACE
     indices = [ansatz.γ_layers[i]:(ansatz.γ_layers[i+1]-1) for i in eachindex(ansatz.γ_layers)[1:end-1]]
     push!(indices, ansatz.γ_layers[end]:length(ansatz.parameters))
