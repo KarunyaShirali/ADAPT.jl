@@ -40,12 +40,14 @@ ADAPT.evolve_state!(evolver, -1.613, ψ0)
 # display(ψ0); println("\n"^4)
 
 # ADD ARBITRARY DISJOINT OPERATORS TO THE ANSATZ
-ADAPT.ADAPT_QAOA.insertlayer!(ansatz)
+push!(ansatz.γ_values, ansatz.γ0)
+push!(ansatz.γ_layers, 1+length(ansatz.parameters))
 push!(ansatz, pool[9] => -1.613) # operator for n = 6: yyIIII
 push!(ansatz, pool[44] =>  0.237) # operator for n = 6: IIXXII
 push!(ansatz, pool[67] => -0.373) # operator for n = 6: IIIIZy
 
-ADAPT.ADAPT_QAOA.insertlayer!(ansatz)
+push!(ansatz.γ_values, ansatz.γ0)
+push!(ansatz.γ_layers, 1+length(ansatz.parameters))
 push!(ansatz, pool[15] => 0.933) # operator for n = 6: ZIyIII
 push!(ansatz, pool[2] =>  -2.194) # operator for n = 6: IXIIII
 push!(ansatz, pool[65] => -0.356) # operator for n = 6: IIIIyy
