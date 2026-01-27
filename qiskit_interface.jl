@@ -21,11 +21,14 @@ module QiskitInterface
         from qiskit.quantum_info import SparsePauliOp
         from qiskit.quantum_info import Statevector
         from qiskit_ibm_runtime import Estimator
+        from qiskit.transpiler import CouplingMap
 
         def transpile_to_backend(n, ansatz_ops, ansatz_coeffs):
 
             backend = GenericBackendV2(n)
             circuit = QuantumCircuit(n)
+
+            cmap = CouplingMap.from_line(n, bidirectional=True)
 
             for op_index, op in enumerate(ansatz_ops, start=0):
                 operator = SparsePauliOp(op, ansatz_coeffs[op_index])
@@ -33,12 +36,13 @@ module QiskitInterface
                 evo = PauliEvolutionGate(operator, time=-1.0)
                 # plug it into a circuit
                 circuit.append(evo, range(n))
-            # print(circuit.draw())
+            print(circuit.draw())
 
             qc_basis = transpile(circuit, 
-            backend, 
-            # basis_gates=['cx', 'id', 'rz', 'sx', 'x', 'reset', 'delay', 'measure'],
-            optimization_level = 0)
+            # backend, 
+            coupling_map= cmap,
+            basis_gates=['cz', 'id', 'rz', 'sx', 'x', 'reset', 'delay', 'measure'],
+            optimization_level = 3)
             print(qc_basis)
             CNOT_depth = qc_basis.depth(lambda instr: len(instr.qubits) > 1)
 
