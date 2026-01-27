@@ -11,7 +11,7 @@ import Random; Random.seed!(0)
 n = 6
 
 # EXAMPLE OF ERDOS-RENYI GRAPH
-prob = 0.5
+prob = 0.3
 g = Graphs.erdos_renyi(n, prob)
 
 # EXAMPLE OF ANOTHER ERDOS-RENYI
@@ -54,7 +54,7 @@ println("Note: in the current ADAPT-QAOA implementation, the observable and gene
 ψ0 = ones(ComplexF64, 2^n) / sqrt(2^n); ψ0 /= norm(ψ0)
 
 # INITIALIZE THE ANSATZ AND TRACE
-ansatz = ADAPT.ADAPT_QAOA.QAOAAnsatz(0.1, H)
+ansatz = ADAPT.ADAPT_QAOA.QAOAAnsatz(1.0, H)
 # the first argument (a hyperparameter) can in principle be set to values other than 0.1
 trace = ADAPT.Trace()
 
@@ -65,30 +65,31 @@ vqe = ADAPT.OptimOptimizer(:BFGS; g_tol=1e-6)
 
 # SELECT THE CALLBACKS
 callbacks = [
-    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_score, :scores, :callback_flagged),
+    ADAPT.Callbacks.Tracer(:energy, :selected_index, :selected_generator, :selected_score, :scores, :callback_flagged),
     ADAPT.Callbacks.ParameterTracer(),
-    ADAPT.Callbacks.Printer(:energy, :selected_index, :selected_score),
+    ADAPT.Callbacks.Printer(:energy, :selected_generator, :selected_score),
     ADAPT.Callbacks.ScoreStopper(1e-3),
-    ADAPT.Callbacks.ParameterStopper(100),
-    ADAPT.Callbacks.FloorStopper(0.5, Exact.E0),
-    ADAPT.Callbacks.SlowStopper(1.0, 3),
+    # ADAPT.Callbacks.ParameterStopper(100),
+    # ADAPT.Callbacks.FloorStopper(0.5, Exact.E0),
+    # ADAPT.Callbacks.SlowStopper(1.0, 3),
+    ADAPT.Callbacks.LayerStopper(20),
 ]
 
 # RUN THE ALGORITHM
 success = ADAPT.run!(ansatz, trace, adapt, vqe, pool, H, ψ0, callbacks)
 println(success ? "Success!" : "Failure - optimization didn't converge.")
 
-# VALIDATE ENERGY IN QISKIT
-ψEND = ADAPT.evolve_state(ansatz, ψ0)
+# # VALIDATE ENERGY IN QISKIT
+# ψEND = ADAPT.evolve_state(ansatz, ψ0)
 
-include("../qiskit_interface.jl")
+# include("../qiskit_interface.jl")
 
-energy_q = QiskitInterface.validate_energy(H, ansatz, ψ0, n)
-println("Energy estimated in qiskit of ψEND = ", energy_q[1])
+# energy_q = QiskitInterface.validate_energy(H, ansatz, ψ0, n)
+# println("Energy estimated in qiskit of ψEND = ", energy_q[1])
 
-E0 = ADAPT.evaluate(H, ψEND)
-println("Energy estimated in ADAPT of ψEND = ",E0)
+# E0 = ADAPT.evaluate(H, ψEND)
+# println("Energy estimated in ADAPT of ψEND = ",E0)
 
-# ψEND_rev = QiskitInterface.revert_endianness(ψEND)
-# E0_r = ADAPT.evaluate(H, ψEND_rev)
-# println("Energy estimated in ADAPT of endianness-reverted ψEND = ",E0_r)
+# # ψEND_rev = QiskitInterface.revert_endianness(ψEND)
+# # E0_r = ADAPT.evaluate(H, ψEND_rev)
+# # println("Energy estimated in ADAPT of endianness-reverted ψEND = ",E0_r)

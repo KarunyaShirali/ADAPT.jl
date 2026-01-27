@@ -81,7 +81,7 @@ pool = ADAPT.ADAPT_QAOA.QAOApools.qaoa_double_pool(n); poolstr = "qaoa_double_po
 ψ0 = ones(ComplexF64, 2^n) / sqrt(2^n); ψ0 /= norm(ψ0)
 
 # INITIALIZE THE ANSATZ AND TRACE
-gamma0 = 0.1; println("gamma0 = $(gamma0)")
+gamma0 = 0.001; println("gamma0 = $(gamma0)")
 ansatz = ADAPT.ADAPT_QAOA.TetrisQAOAAnsatz(gamma0, pool, H)
 
 # the first argument (a hyperparameter) can in principle be set to values other than 0.1
@@ -101,10 +101,10 @@ callbacks = [
     ModalSampleTracer(),
     ADAPT.Callbacks.Printer(:energy, :selected_generator, :selected_score),
     ADAPT.Callbacks.ScoreStopper(adapt_gradient_threshold),
-    ADAPT.Callbacks.ParameterStopper(100),
-    ADAPT.Callbacks.FloorStopper(0.3, Exact.E0),
-    ADAPT.Callbacks.SlowStopper(0.3, 3),
-    ADAPT.Callbacks.LayerStopper(2),
+    # ADAPT.Callbacks.ParameterStopper(100),
+    # ADAPT.Callbacks.FloorStopper(0.3, Exact.E0),
+    # ADAPT.Callbacks.SlowStopper(0.3, 3),
+    ADAPT.Callbacks.LayerStopper(10),
 ]
 
 # RUN THE ALGORITHM
