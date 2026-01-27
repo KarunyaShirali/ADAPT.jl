@@ -532,12 +532,11 @@ module Callbacks
     end
 
     function (stopper::ParameterStopper)(
-        ::Data, ansatz::AbstractAnsatz, trace::Trace,
+        ::Data, ansatz::AbstractAnsatz, ::Trace,
         ::AdaptProtocol, ::GeneratorList, ::Observable, ::QuantumState,
     )
         if length(ansatz) ≥ stopper.n
             ADAPT.set_converged!(ansatz, true)
-            trace[:callback_flagged] = "ParameterStopper"
         end
         return false
     end
@@ -560,12 +559,11 @@ module Callbacks
     end
 
     function (stopper::ScoreStopper)(
-        data::Data, ansatz::AbstractAnsatz, trace::Trace,
+        data::Data, ansatz::AbstractAnsatz, ::Trace,
         ::AdaptProtocol, ::GeneratorList, ::Observable, ::QuantumState,
     )
         if maximum(abs.(data[:scores])) < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
-            trace[:callback_flagged] = "ScoreStopper"
         end
         return false
     end
@@ -608,7 +606,6 @@ module Callbacks
         energy_range = maximum(last_n_energies) - minimum(last_n_energies)
         if energy_range < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
-            trace[:callback_flagged] = "SlowStopper"
         end
 
         return false
@@ -644,45 +641,6 @@ module Callbacks
         last_energy = last(trace[:energy])
         if abs(last_energy - stopper.floor) < stopper.threshold
             ADAPT.set_converged!(ansatz, true)
-            trace[:callback_flagged] = "FloorStopper"
-        end
-        return false
-    end
-
-
-
-    # import ..ADAPT.Basics.OptimOptimizer #: .TetrisQAOAAnsatz, ADAPT_QAOA.DiagonalQAOAAnsatz, ADAPT_QAOA.QAOAAnsatz
-
-    
-    """
-        LayerStopper(n::Int)
-
-    Converge once the qaoa-ansatz reaches a certain number of layers of the problem Hamiltonian.
-
-    Called for `adapt!` only.
-
-    # Parameters
-    - `n`: the minimum number of parameters required for convergence
-
-    """
-    struct LayerStopper <: AbstractCallback
-        n::Int
-    end
-
-    function (stopper::LayerStopper)(
-        ::Data, ansatz::AbstractAnsatz#=TetrisQAOAAnsatz=#, trace::Trace,
-        ::AdaptProtocol, ::GeneratorList, ::Observable, ::QuantumState,
-    )
-        #= Should this use length(trace[:selected_index]) or the QAOA-specific γ_values/γ_parameters? =#
-        if !hasproperty(ansatz, :γ_values) && !hasproperty(ansatz, :γ_parameters)
-            println("The LayerStopper callback cannot be used with this ansatz type.")
-            exit()
-        end
-        layers = hasproperty(ansatz, :γ_values) ? (length(ansatz.γ_values)-1) : length(ansatz.γ_parameters)
-        # we subtract 1 from length(ansatz.γ_values) above because an extra layer is inserted in adapt!
-        if layers ≥ stopper.n
-            ADAPT.set_converged!(ansatz, true)
-            trace[:callback_flagged] = "LayerStopper"
         end
         return false
     end
