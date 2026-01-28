@@ -679,7 +679,7 @@ module Callbacks
             exit()
         end
         layers = hasproperty(ansatz, :γ_values) ? (length(ansatz.γ_values)) : length(ansatz.γ_parameters)
-        # we subtract 1 from length(ansatz.γ_values) above because an extra layer is inserted in adapt!
+        
         if layers ≥ stopper.n
             ADAPT.set_converged!(ansatz, true)
             trace[:callback_flagged] = "LayerStopper"
