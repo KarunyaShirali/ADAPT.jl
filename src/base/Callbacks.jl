@@ -662,7 +662,7 @@ module Callbacks
     Called for `adapt!` only.
 
     # Parameters
-    - `n`: the minimum number of parameters required for convergence
+    - `n`: the number of layers to terminate the calculation at.
 
     """
     struct LayerStopper <: AbstractCallback
