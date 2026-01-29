@@ -22,6 +22,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 BlockDavidson = "0.1.0"
+CSV = "0.10.15"
 PauliOperators = "1.0.0"
 julia = "1"
 
